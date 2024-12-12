@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+import time
 import sys
 import csv
-import time
 from tqdm import tqdm
 
 # Read and process an NFA configuration file
@@ -18,17 +18,23 @@ def load_nfa_config(file_path):
 
     def parse_metadata(line, index):
         """Parse metadata lines (NFA name, states, symbols, start state, accept states)."""
-        nonlocal machine_name, states, alphabet, initial_state, final_states
         if index == 0:
+            global machine_name  # Add global here
             machine_name = line.strip().split(',')[0]  # NFA name
         elif index == 1:
+            global states  # Add global here
             states = list(filter(None, line.strip().split(',')))  # State names
         elif index == 2:
+            global alphabet  # Add global here
             alphabet = list(filter(None, line.strip().split(',')))  # Input symbols
         elif index == 3:
+            global initial_state  # Add global here
             initial_state = line.strip().split(',')[0]  # Start state
         elif index == 4:
+            global final_states  # Add global here
             final_states = list(filter(None, line.strip().split(',')))  # Accept states
+
+
 
     def parse_transition(line):
         """Parse and store a single transition rule."""
@@ -36,14 +42,15 @@ def load_nfa_config(file_path):
         if source not in transitions:
             transitions[source] = []
         transitions[source].append((symbol, destination))
-
-    # Read the file and process line by line
+    
+     # Read the file and process line by line
     with open(file_path) as file:
         for idx, line in tqdm(enumerate(file), desc='Loading NFA configuration...'):
             if idx < 5:
                 parse_metadata(line, idx)  # Parse metadata lines
             else:
                 parse_transition(line.strip())  # Parse transition rules
+
 
 # Trace all paths through the NFA for a given input string
 def process_input(input_string):
@@ -82,16 +89,18 @@ def process_input(input_string):
 
     return total_paths, accepting_paths, accept_sequences
 
+
 # Write results to an output file
 def save_results(input_file, input_data, total_paths, accepting_paths, accept_sequences):
     """Write the results of the NFA simulation to a CSV file."""
-    output_file = f"{input_file[:-4]}-{input_data}-output.csv"
+    output_file = f"{input_file[:-4]}_{input_data}_output.csv"
     with open(output_file, 'w') as file:
         writer = csv.writer(file)
         writer.writerow(['input_file', 'NFA_name', 'input_string', 'possible_paths', 'accept_paths'])
         writer.writerow([input_file, machine_name, input_data, total_paths, accepting_paths])
         for sequence in accept_sequences:
             writer.writerow(sequence.split(','))
+
 
 # Main function to handle user interaction and control flow
 def main():
