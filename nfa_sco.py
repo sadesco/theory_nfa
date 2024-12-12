@@ -4,74 +4,74 @@ import sys
 import csv
 from tqdm import tqdm
 
-# Read and process an NFA configuration file
+
 def load_nfa_config(file_path):
-    """Load the NFA configuration from a file and initialize relevant data structures."""
-    global machine_name  # Name of the NFA
-    global states        # List of states
-    global alphabet      # List of input symbols
-    global initial_state # Start state
-    global final_states  # Accept states
-    global transitions   # Transition table (dictionary)
+    """load the NFA configuration from a file and initialize relevant data structures"""
+    global machine_name  # name of the NFA
+    global states        # list of states
+    global alphabet      # list of input symbols
+    global initial_state # start state
+    global final_states  # accept states
+    global transitions   # transition table 
 
     transitions = {}
 
     def parse_metadata(line, index):
-        """Parse metadata lines (NFA name, states, symbols, start state, accept states)."""
+        """parse metadata lines (NFA name, states, symbols, start state, accept states)"""
         if index == 0:
-            global machine_name  # Add global here
+            global machine_name  
             machine_name = line.strip().split(',')[0]  # NFA name
         elif index == 1:
-            global states  # Add global here
-            states = list(filter(None, line.strip().split(',')))  # State names
+            global states  
+            states = list(filter(None, line.strip().split(',')))  # state names
         elif index == 2:
-            global alphabet  # Add global here
-            alphabet = list(filter(None, line.strip().split(',')))  # Input symbols
+            global alphabet  
+            alphabet = list(filter(None, line.strip().split(',')))  # input symbols
         elif index == 3:
-            global initial_state  # Add global here
-            initial_state = line.strip().split(',')[0]  # Start state
+            global initial_state  
+            initial_state = line.strip().split(',')[0]  # start state
         elif index == 4:
-            global final_states  # Add global here
-            final_states = list(filter(None, line.strip().split(',')))  # Accept states
+            global final_states  
+            final_states = list(filter(None, line.strip().split(',')))  # accept states
 
 
 
     def parse_transition(line):
-        """Parse and store a single transition rule."""
+        """parse and store a single transition rule"""
         source, symbol, destination = line.split(',')[0:3]
         if source not in transitions:
             transitions[source] = []
         transitions[source].append((symbol, destination))
     
-     # Read the file and process line by line
+     # read the file and process line by line
     with open(file_path) as file:
         for idx, line in tqdm(enumerate(file), desc='Loading NFA configuration...'):
             if idx < 5:
-                parse_metadata(line, idx)  # Parse metadata lines
+                parse_metadata(line, idx)  # parse metadata lines
             else:
-                parse_transition(line.strip())  # Parse transition rules
+                parse_transition(line.strip())  # parse transition rules
 
 
-# Trace all paths through the NFA for a given input string
+
 def process_input(input_string):
-    """Simulate the NFA on an input string and find all possible and accepting paths."""
-    frontier = [(initial_state, input_string, False, initial_state)]  # Stack to hold current exploration state
-    total_paths = 0  # Total possible paths
-    accepting_paths = 0  # Total accepting paths
-    accept_sequences = []  # Sequences of states for accepting paths
+    """simulate the NFA on an input string and find all possible and accepting paths"""
+    frontier = [(initial_state, input_string, False, initial_state)]  # stack to hold current exploration state
+    total_paths = 0  # total possible paths
+    accepting_paths = 0  # total accepting paths
+    accept_sequences = []  # sequences of states for accepting paths
 
-    # Handle empty string input
+    # handle empty string input
     if input_string == '~$':
         if initial_state in final_states:
             accepting_paths += 1
             total_paths += 1
             accept_sequences.append(initial_state)
 
-    # Process the input string through the NFA
+    # process the input string through the NFA
     while frontier:
         current_state, remaining_input, is_epsilon, sequence = frontier.pop()
 
-        # If no more input, check if the current state is an accepting state
+        # if no more input, check if the current state is an accepting state
         if remaining_input == '$':
             if current_state in final_states:
                 accepting_paths += 1
@@ -80,19 +80,22 @@ def process_input(input_string):
             if not is_epsilon:
                 total_paths += 1
 
-        # Expand transitions for the current state
+        # expand transitions for the current state
         for symbol, next_state in transitions.get(current_state, []):
-            if symbol == '~':  # Epsilon transition
+            if symbol == '~':  # epsilon transition
+                # if epsilon transition, do not consume input and just transition
                 frontier.append((next_state, remaining_input, True, sequence + ',' + next_state))
-            elif remaining_input and remaining_input[0] == symbol:  # Match input symbol
+            elif remaining_input and remaining_input[0] == symbol:  # match input symbol
+                # if input symbol matches, move to the next state and consume the symbol
                 frontier.append((next_state, remaining_input[1:], False, sequence + ',' + next_state))
 
     return total_paths, accepting_paths, accept_sequences
 
 
-# Write results to an output file
+
+
 def save_results(input_file, input_data, total_paths, accepting_paths, accept_sequences):
-    """Write the results of the NFA simulation to a CSV file."""
+    """write the results of the NFA simulation to a CSV file"""
     output_file = f"{input_file[:-4]}_{input_data}_output.csv"
     with open(output_file, 'w') as file:
         writer = csv.writer(file)
@@ -102,14 +105,14 @@ def save_results(input_file, input_data, total_paths, accepting_paths, accept_se
             writer.writerow(sequence.split(','))
 
 
-# Main function to handle user interaction and control flow
+
 def main():
-    """Main function to drive the NFA simulation."""
+    """main function to drive the NFA simulation"""
     input_file = input('Enter NFA file name: ')
-    load_nfa_config(input_file)  # Load the NFA configuration
+    load_nfa_config(input_file)  # load the NFA configuration
 
     user_input = input('Input a string: ')
-    user_input += '$'  # Append end-of-input marker
+    user_input += '$'  # append end-of-input marker
 
     paths, accept_count, accept_seq = process_input(user_input)
 

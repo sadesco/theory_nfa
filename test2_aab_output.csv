@@ -1,0 +1,3 @@
+input_file,NFA_name,input_string,possible_paths,accept_paths
+test2.csv,N2,aab,1,1
+q0,q1,q1,q2
