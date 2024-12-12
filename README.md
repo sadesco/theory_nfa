@@ -24,9 +24,31 @@ Specific homework and problem types that benefited:
 
 ## What files are what?
 
+Program Code:
 nfa_sco.py: This is the main Python script that simulates the NFA. It includes the following functions:
 
 1. load_nfa_config(file_path): Loads the NFA configuration from a file.
 2. process_input(input_string): Simulates the NFA on the given input string.
 3. save_results(input_file, input_data, total_paths, accepting_paths, accept_sequences): Saves the results to a CSV file.
 4. main(): The entry point of the program that orchestrates loading the NFA, processing the input, and saving the results.
+
+Output Format:
+
+The output file is named as follows: [Machine Name]_[Input String]_output.csv
+
+Content structure of the output file:
+1. The first line includes column headers: input_file, NFA_name, input_string, possible_paths, and accept_paths.
+2. The second line contains the corresponding values for each of these headers.
+3. Each subsequent line represents a sequence of states from one of the accepted paths in the NFA.
+
+Explanation of the data in the output file:
+1. input_file: The name of the input NFA configuration file.
+2. machine_name: The name assigned to the NFA machine.
+3. input_data: The string provided by the user for NFA processing.
+4. total_paths: The total number of distinct paths computed by the NFA for the given input string.
+5. accepting_paths: The number of paths that end in an accepting state.
+
+
+Example of an output file: 
+For an NFA named "test1" and an input string "010110", the output file would be named test1_010110_output.csv.
+

@@ -99,7 +99,7 @@ def save_results(input_file, input_data, total_paths, accepting_paths, accept_se
     output_file = f"{input_file[:-4]}_{input_data}_output.csv"
     with open(output_file, 'w') as file:
         writer = csv.writer(file)
-        writer.writerow(['input_file', 'NFA_name', 'input_string', 'possible_paths', 'accept_paths'])
+        writer.writerow(['input_file', 'machine_name', 'input_data', 'total_paths', 'accepting_paths'])
         writer.writerow([input_file, machine_name, input_data, total_paths, accepting_paths])
         for sequence in accept_sequences:
             writer.writerow(sequence.split(','))
