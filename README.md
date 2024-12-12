@@ -52,3 +52,10 @@ Explanation of the data in the output file:
 Example of an output file: 
 For an NFA named "test1" and an input string "010110", the output file would be named test1_010110_output.csv.
 
+test1.csv
+1. input: 11
+2. input 010110
+
+test2.csv
+1. input: aab
+2. input: ab
